@@ -90,3 +90,10 @@ interaction.plot(x.factor = IDE$Herramienta, trace.factor = IDE$Experiencia,
                  type = "b", legend = TRUE,
                  xlab = "Herramienta", ylab = "Duración en horas",
                  pch = c(1,19), col = c("#00AFBB", "#E7B800", "#FC4E07"))
+
+res.aov <- aov(Duracion ~ Herramienta + Experiencia, data = IDE)
+summary (res.aov)
+res.aov_inter <- aov(Duracion ~ Herramienta * Experiencia, data = IDE)
+summary (res.aov_inter)
+
+res.aov_inter2 <- aov(Duracion ~ Herramienta + Experiencia + Herramienta:Experiencia, data = IDE)
