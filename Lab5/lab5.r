@@ -57,3 +57,36 @@ IDE[, .(count = .N,
 
 boxplot(Duracion ~ Herramienta, data=IDE, frame = FALSE,
         col = c("#00AFBB", "#E7B800"), ylab=" Duracion")
+
+boxplot(Duracion ~ Experiencia, data = IDE, frame = FALSE,
+        col = c("#00AFBB", "#E7B800", "#FC4E07"), ylab = "Duración (horas)")
+
+boxplot(Duracion ~ Herramienta * Experiencia, data=IDE, frame = FALSE,
+        col = c("#00AFBB", "#E7B800"), ylab="Duracion")
+
+boxplot(Duracion ~ Experiencia * Herramienta, data=IDE, frame = FALSE,
+        col = c("#00AFBB", "#E7B800"), ylab="Duracion")
+
+IDE %>%
+  ggplot() +
+  aes(x = Herramienta, color = Experiencia, group = Experiencia, y = Duracion) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line")
+
+IDE %>% 
+  ggplot() + 
+  aes(x = Experiencia, color = Herramienta, group = Herramienta, y = Duracion) + 
+  stat_summary(fun = mean, geom = "point") + 
+  stat_summary(fun = mean, geom = "line")
+
+interaction.plot(x.factor = IDE$Experiencia, trace.factor = IDE$Herramienta,
+                 response = IDE$Duracion, fun = mean,
+                 type = "b", legend = TRUE,
+                 xlab = "Experiencia", ylab="Duración en horas",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+
+interaction.plot(x.factor = IDE$Herramienta, trace.factor = IDE$Experiencia,
+                 response = IDE$Duracion, fun = mean,
+                 type = "b", legend = TRUE,
+                 xlab = "Herramienta", ylab = "Duración en horas",
+                 pch = c(1,19), col = c("#00AFBB", "#E7B800", "#FC4E07"))
