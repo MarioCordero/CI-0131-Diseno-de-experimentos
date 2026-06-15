@@ -97,3 +97,63 @@ res.aov_inter <- aov(Duracion ~ Herramienta * Experiencia, data = IDE)
 summary (res.aov_inter)
 
 res.aov_inter2 <- aov(Duracion ~ Herramienta + Experiencia + Herramienta:Experiencia, data = IDE)
+
+hist(res.aov_inter$residuals)
+qqnorm(res.aov_inter$residuals)
+qqline(res.aov_inter$residuals)
+
+shapiro.test(res.aov_inter$residuals)
+
+plot(res.aov_inter$residuals)
+
+plot(res.aov_inter, 1)
+
+inter <- interaction(IDE$Experiencia, IDE$Herramienta)
+bartlett.test(Duracion ~ inter, data = IDE)
+
+summary(res.aov)
+
+summary(res.aov_inter)
+
+TukeyHSD(res.aov_inter , which = "Experiencia")
+
+par(mar = c(2, 6, 2, 2))
+plot(TukeyHSD(res.aov, conf.level=.95, which = "Experiencia"), las = 1)
+
+TukeyHSD(res.aov_inter, which = "Herramienta")
+
+TukeyHSD(res.aov_inter)
+
+library(lsr)
+etaSquared(res.aov_inter, anova = TRUE)
+
+library(effectsize)
+effectsize::eta_squared(res.aov_inter)
+
+#############################
+library(pwr2)
+efectoHerr = 0.15 # se toma del eta.squared.part que usted obtuvo. 0.15 no es el real
+efectoExp = 0.35 # se toma del eta.squared.part que usted obtuvo. 0.35 no es el real
+fA = sqrt(efectoHerr / (1 - efectoHerr))
+fB = sqrt(efectoExp / (1 - efectoExp))
+print(fA)
+print(fB)
+
+effectsize::cohens_f(res.aov_inter)
+
+pwr.2way(a=2, b=3, alpha=0.05, size.A=30, size.B=20, f.A=fA, f.B=fB)
+
+############################
+potencia_buscada <- 0.80
+resultados <- data.frame()
+for(nA in 5:120){
+  for(nB in 5:100){
+    p <- pwr.2way(a = 2, b = 3, alpha = 0.05,
+                  size.A = nA,size.B = nB, f.A = fA, f.B = fB )
+    resultados <- rbind(
+      resultados,
+      data.frame( nA = nA, nB = nB, power = p$power)
+    )
+  }
+}
+subset(resultados, power >= potencia_buscada)[1, ]
