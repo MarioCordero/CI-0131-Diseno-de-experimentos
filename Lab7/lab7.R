@@ -88,3 +88,44 @@ summary(mul)
 library(car)
 # Calcular el VIF del modelo multiple
 vif(mul)
+
+# Pregunta 15
+
+m_cuatro_1 <- lm(runs ~ at_bats + hits + homeruns + bat_avg, data = beis)
+summary(m_cuatro_1)
+vif(m_cuatro_1)
+
+library(car)
+
+# Lista de las 5 variables originales
+variables <- c("at_bats", "hits", "homeruns", "bat_avg", "wins")
+
+# Generar todas las combinaciones posibles de 4 variables
+combos <- combn(variables, 4)
+
+# Bucle para correr los 5 modelos
+for(i in 1:ncol(combos)) {
+  vars_combo <- combos[, i]
+  
+  # Crear formula dinámica
+  formula_str <- paste("runs ~", paste(vars_combo, collapse = " + "))
+  modelo <- lm(as.formula(formula_str), data = beis)
+  resumen <- summary(modelo)
+  
+  # Extraer p-value global
+  p_val <- pf(resumen$fstatistic[1], resumen$fstatistic[2], resumen$fstatistic[3], lower.tail = FALSE)
+  
+  # Extraer Adjusted R-squared
+  adj_r2 <- resumen$adj.r.squared
+  
+  # Calcular VIF
+  vifs <- vif(modelo)
+  vif_str <- paste(paste0(names(vifs), ": ", round(vifs, 2)), collapse = ", ")
+  
+  # Imprimir resultados
+  cat(sprintf("--- MODELO %d ---\n", i))
+  cat(sprintf("Variables: %s\n", paste(vars_combo, collapse = ", ")))
+  cat(sprintf("p-value:   %.4e\n", p_val))
+  cat(sprintf("Adj R^2:   %.4f\n", adj_r2))
+  cat(sprintf("VIFs:      %s\n\n", vif_str))
+}
